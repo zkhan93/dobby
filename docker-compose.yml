@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+
+  redis:
+    image: "redis"
+    restart: always
+    ports:
+      - 6379
+
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on: 
+      - redis
+
+  worker:
+    build: ./worker
+    restart: always
+    privileged: true
+    devices:
+      - "/dev/mem:/dev/mem"
+    depends_on: 
+      - redis
+    environment: 
+      - GPIOZERO_PIN_FACTORY=pigpio
+      - PIGPIO_ADDR=172.17.0.1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  distance:
+    build: ./distance
+    restart: always
+    privileged: true
+    devices:
+      - "/dev/mem:/dev/mem"
+    depends_on: 
+      - redis
+    environment: 
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - INTERVAL=2
+
+  frontend:
+    # it also reverse proxy to backend
+    build: ./frontend
+    restart: always
+    depends_on: 
+      - backend
+    ports:
+      - 80:80
+
+#  telegram_bot:
+#    build: ./telegram_bot
+#    restart: always
+#    # volumes: 
+#    #   - ./app:/app
+
+networks:
+  default:
+    driver: bridge
+
+# pigpiod:
+#   build: ./pigpiod
+#   restart: always
+#   privileged: true
+#   devices:
+#     - "/dev/mem:/dev/mem"
+#     - "/dev/gpiomem:/dev/gpiomem"
+#     - "/dev/i2c-1:/dev/i2c-1"
+#   ports:
+#     - 8888

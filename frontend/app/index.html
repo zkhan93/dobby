@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Dobby</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui-range@1.0.1/range.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div id="app" class="ui container">
+        <div class="ui basic segment">
+            <h1 class="ui heading">Dobby</h1>
+            <div class="ui default button" :class="{ 'loading disabled':loading}" @click="start" v-if="!started">Start
+            </div>
+            <div class="ui positive button" :class="{'loading disabled':loading}" @click="stop" v-else>Stop</div>
+        </div>
+        <div class="ui basic segment">
+            <table class="ui very basic collapsing celled table">
+                <thead>
+                    <tr>
+                        <th>Args</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(value, key) in movement">
+                        <td>{{key}}</td>
+                        <td>{{value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="ui three column grid">
+            <div class="row">
+                <h4 class="ui medium header">Parts</h4>
+            </div>
+            <div class="row">
+                <div class="ui column segment">
+                    <div class="ui small header">Camera Servo</div>
+                    <div class="ui content">
+                        GPIO PINs 13, 15
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo</h4>
+                        <div class="ui range" id="servo-angle"></div>
+                        <div class="ui input">
+                            <input v-model="angle" type="number" min=-90 max=90 value="0" placeholder="Angle..." />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="ui column segment">
+                    <div class="ui small header">Wheels</div>
+                    <div class="ui content">
+                        GPIO PINs 22, 24, 16, 18
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo</h4>
+                        <div class="ui buttons">
+                            <div class="ui column">
+                                <div class="ui vertical icon buttons">
+                                    <div class="ui disabled button">
+                                        <i class="angle stop icon"></i>
+                                    </div>
+                                    <div class="ui button" @click="hitWheelsApi('left')">
+                                        <i class="angle left icon"></i>
+                                    </div>
+                                    <div class="ui disabled button">
+                                        <i class="angle stop icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ui column">
+                                <div class="ui vertical icon buttons">
+                                    <div class="ui button" @click="hitWheelsApi('forward')">
+                                        <i class="angle up icon"></i>
+                                    </div>
+                                    <div class="ui button" @click="hitWheelsApi('stop')">
+                                        <i class="angle stop icon"></i>
+                                    </div>
+                                    <div class="ui button" @click="hitWheelsApi('backward')">
+                                        <i class="angle down icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ui column">
+                                <div class="ui vertical icon buttons">
+                                    <div class="ui disabled button">
+                                        <i class="angle stop icon"></i>
+                                    </div>
+                                    <div class="ui button" @click="hitWheelsApi('right')">
+                                        <i class="angle right icon"></i>
+                                    </div>
+                                    <div class="ui disabled button">
+                                        <i class="angle stop icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui column segment">
+                    <div class="ui small header">Ultrasonic</div>
+                    <div class="ui content">
+                        ultrasonic = 4(vcc), 6(gnd), 7, 8
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo</h4>
+                        <div class="ui icon buttons" @click="toggleUltrasonic">
+                            <div class="ui button" :class="{disabled: ultrasonicLooper}">
+                                <i class="play icon"></i>
+                            </div>
+                            <div class="ui button" :class="{disabled: !ultrasonicLooper}">
+                                <i class="stop icon"></i>
+                            </div>
+                        </div>
+                        <br /><br />
+                        <p class="ui content">Obstacle at <b>{{distance}}</b></p>
+                    </div>
+                </div>
+                <div class="ui column segment">
+                    <div class="ui small header">Camera</div>
+                    <div class="ui content">
+                        CAMERA PORT
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo (WIP)</h4>
+                        <div class="ui vertical small buttons">
+                            <div class="ui disabled button">CAPTURE IMAGE</div>
+                            <div class="ui disabled button">CAPTURE VIDEO</div>
+                            <div class="ui disabled button">FIND PERSON</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui column segment">
+                    <div class="ui small header">Speaker</div>
+                    <div class="ui content">
+                        Audio Jack
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo (WIP)</h4>
+                        <div class="ui input">
+                            <input type="text" name="content" placeholder="Enter text" disabled />
+                        </div>
+                        <div class="ui disabled button">Speak</div>
+
+                    </div>
+                </div>
+                <div class="ui column segment">
+                    <div class="ui small header">Explore</div>
+                    <div class="ui content">
+                        <ul class="ui list">
+                            <li>Explore the environment</li>
+                            <li>Say Hi! to people around Dobby(Face detection), ask their name but I got no microphone
+                                :(</li>
+                            <li>Remember details of identified people(Face recognition)</li>
+                            <li>Follow a person if he asks(Object detection and distance calculation)</li>
+                        </ul>
+                    </div>
+                    <br />
+                    <hr />
+                    <div class="">
+                        <h4>Demo (WIP)</h4>
+                        <div class="ui disabled button">Start Exploring</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui-range@1.0.1/range.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.1.0/firebase.js"></script>
+    <script type="text/javascript" src="../js/main.js"></script>
+</body>
+
+</html>

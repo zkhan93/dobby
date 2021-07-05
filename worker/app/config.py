@@ -1,0 +1,14 @@
+import os
+
+DEBUG = os.getenv("DEBUG", False)
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+# BCM numbering
+
+WHEEL_RIGHT  = (17, 18)
+WHEEL_LEFT = (22, 23)
+
+ULTRASONIC_ECHO = 14
+ULTRASONIC_TRIGGER = 4
+
+CAMSERVO_TILT = 27

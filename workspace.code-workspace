@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../dobby-bot"
+        },
+        {
+            "path": "../dobby-web"
+        },
+        {
+            "path": "../dobby-hardware"
+        }
+    ]
+}
