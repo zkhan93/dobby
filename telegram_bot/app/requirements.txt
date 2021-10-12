@@ -4,5 +4,5 @@ funcsigs==1.0.2
 future==0.17.1
 mock==3.0.5
 python-telegram-bot==11.1.0
-opencv-contrib-python==3.4.11.45
+opencv-contrib-python==4.2.0.32
 requests==2.25.1
